@@ -1,3 +1,5 @@
 global.sinon = require "sinon"
-require "../../../helpers/node"
+require "../../../register"
 global.Firehose = require "../../../lib/index"
+
+

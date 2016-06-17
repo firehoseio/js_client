@@ -15,17 +15,32 @@ Firehose is both a Rack application and JavaScript library that makes building r
 
 # Usage
 
+Firehose depends on jQuery, which must be available in the global scope (window.jQuery or global.jQuery).
+
+## Script
+
+Load `dist/firehose.js` via a script tag. Then access Firehose via `window.Firehose`.
+
+## Webpack/Browserify
+
+```
+global.jQuery = require("jquery")
+Firehose = require("firehose-client")
+```
+
 ## Node
 
+As this is a browser client, it involes slightly more work top get it running in Node.
+A window and document must be available along with jQuery, WebSocket and XMLHttpRequest.
+
+A helper to set this up is provided at `helpers/node.js`  which depends on `jsdom`,
+`jquery`, `ws` and `xmlhttprequest` being available as node modules.
+
 ```
-$ npm install firehose-client
-> Firehose = require("firehose-client")
+$ npm install firehose-client jsdom@9.2 jquery@2.2 ws@1.1 xmlhttprequest@1.8 --save
+$ node
+> Firehose = require("./node_modules/firehose-client/helpers/node.js")
 ```
-
-## Browser
-
-Serve `/dist/firehose.vendor.js` and `/dist/firehose.js` then you will be able to access the `window.Firehose` object.
-
 
 # The JavaScript Consumer
 

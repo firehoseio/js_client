@@ -1,5 +1,6 @@
-window.$ = window.jQuery = require "jquery"
+Firehose = require "../lib/firehose"
 
-$(window)
-
-window.Firehose = require "../lib/index.js"
+if typeof module == "object" && typeof module.exports == "object"
+  module.exports = Firehose
+else
+  window.Firehose = Firehose

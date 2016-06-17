@@ -1,3 +1,4 @@
+$ = require "jquery"
 Transport = require "./transport"
 
 class LongPollTransport extends Transport

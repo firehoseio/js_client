@@ -1,3 +1,4 @@
+$ = require "jquery"
 WebSocketTransport = require "./web_socket_transport"
 LongPollTransport = require "./long_poll_transport"
 

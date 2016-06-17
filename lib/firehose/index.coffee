@@ -1,6 +1,6 @@
 module.exports =
-  version: require("../../package.json").version
-  codeName: require("../../package.json").codeName
+  version: __VERSION__
+  codeName: __CODENAME__
   Consumer: require "./consumer"
   LongPollTransport: require "./long_poll_transport"
   MultiplexedConsumer: require "./multiplexed_consumer"

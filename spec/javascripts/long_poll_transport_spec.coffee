@@ -1,3 +1,5 @@
+$ = require "jquery"
+
 describe 'Firehose.LongPollTransport', ->
   beforeEach ->
     @klass    = Firehose.LongPollTransport

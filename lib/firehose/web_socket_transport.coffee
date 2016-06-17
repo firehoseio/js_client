@@ -1,3 +1,4 @@
+$ = require "jquery"
 Transport = require "./transport"
 
 INITIAL_PING_TIMEOUT   =  2000
@@ -112,4 +113,3 @@ class WebSocketTransport extends Transport
       @keepaliveTimeout = null
 
 module.exports = WebSocketTransport
-

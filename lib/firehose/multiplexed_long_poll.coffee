@@ -1,3 +1,4 @@
+$ = require "jquery"
 LongPollTransport = require "./long_poll_transport"
 
 class MultiplexedLongPoll extends LongPollTransport

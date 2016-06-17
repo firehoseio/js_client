@@ -19,6 +19,11 @@ Firehose is both a Rack application and JavaScript library that makes building r
 
 ```
 $ npm install firehose-client
+
+// Register browser globals
+> require("firehose-client/register")
+
+// Access the classes
 > Firehose = require("firehose-client")
 ```
 

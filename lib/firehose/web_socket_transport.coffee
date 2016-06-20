@@ -28,7 +28,8 @@ class WebSocketTransport extends Transport
     # Run this in a try/catch block because IE10 inside of a .NET control
     # complains about security zones.
     try
-      @socket = new getWebSocket()("#{@_protocol()}:#{@config.uri}?#{$.param @_requestParams()}")
+      ws = getWebSocket()
+      @socket = new ws("#{@_protocol()}:#{@config.uri}?#{$.param @_requestParams()}")
       @socket.onopen    = @_open
       @socket.onclose   = @_close
       @socket.onerror   = @_error
@@ -48,7 +49,7 @@ class WebSocketTransport extends Transport
 
   _lookForInitialPong: (event) =>
     @_restartKeepAlive()
-    if isPong(try JSON.parse event.data catch e then {})
+    if @_isPong(try JSON.parse event.data catch e then {})
       if @_lastMessageSequence?
         # don't callback to connectionVerified on subsequent reconnects
         @sendStartingMessageSequence @_lastMessageSequence
@@ -67,7 +68,7 @@ class WebSocketTransport extends Transport
   _message: (event) =>
     frame = @config.parse event.data
     @_restartKeepAlive()
-    unless isPong frame
+    unless @_isPong frame
       try
         @_lastMessageSequence = frame.last_sequence
         @config.message @config.parse frame.message
@@ -110,6 +111,9 @@ class WebSocketTransport extends Transport
     if @keepaliveTimeout?
       clearTimeout @keepaliveTimeout
       @keepaliveTimeout = null
+
+  _isPong: (o) ->
+    o.pong is 'PONG'
 
 module.exports = WebSocketTransport
 

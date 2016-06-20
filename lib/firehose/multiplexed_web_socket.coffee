@@ -1,8 +1,5 @@
 WebSocketTransport = require "./web_socket_transport"
 
-isPong = (o) ->
-  o.pong is 'PONG'
-
 class MultiplexedWebSocket extends WebSocketTransport
   constructor: (args) ->
     super args
@@ -34,7 +31,7 @@ class MultiplexedWebSocket extends WebSocketTransport
   _message: (event) =>
     frame = @config.parse event.data
     @_restartKeepAlive()
-    unless isPong frame
+    unless @_isPong frame
       try
         @_lastMessageSequence ||= {}
         @_lastMessageSequence[frame.channel] = frame.last_sequence

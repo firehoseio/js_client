@@ -16,6 +16,8 @@ class Consumer
     # reason it can't connect (probably a firewall)
     @config.failed       ||= ->
       throw "Could not connect"
+    # gets thrown if a subscription request failed
+    @config.subscriptionFailed ||= ->
     # Params that we'll tack on to the URL.
     @config.params       ||= {}
     # Do stuff before we send the message into config.message. The sensible

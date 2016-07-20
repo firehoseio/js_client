@@ -4,6 +4,8 @@
   "codeName": "Jingle All the Way",
   "main": "lib/index.js",
   "scripts": {
+    "prepublish": "npm run build",
+    "postpublish": "git push --follow-tags",
     "build": "webpack -p",
     "build:watch": "webpack --watch",
     "test": "JASMINE_CONFIG_PATH=./spec/javascripts/support/jasmine.json jasmine"

@@ -55,9 +55,14 @@ class LongPollTransport extends Transport
       success:      @_success
       error:        @_error
       cache:        false
+      statusCode:
+        500:        @_error
 
   _requestParams: =>
-    @config.params
+    if typeof @config.params == "function"
+      @config.params()
+    else
+      @config.params
 
   stop: =>
     @_stopRequestLoop = true
@@ -100,6 +105,11 @@ class LongPollTransport extends Transport
   # We need this custom handler to have the connection status
   # properly displayed
   _error: (jqXhr, status, error) =>
+    if jqXhr.status == 500
+      error = JSON.parse jqXhr.responseText
+      if error.error == 'Subscription failed'
+        @config.subscriptionFailed(error)
+
     unless @_needToNotifyOfReconnect or @_stopRequestLoop
       @_needToNotifyOfReconnect = true
       @config.disconnected()

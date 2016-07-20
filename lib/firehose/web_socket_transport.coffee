@@ -42,7 +42,10 @@ class WebSocketTransport extends Transport
     if @config.ssl then "wss" else "ws"
 
   _requestParams: =>
-    @config.params
+    if typeof @config.params == "function"
+      @config.params()
+    else
+      @config.params
 
   _open: =>
     sendPing @socket
@@ -68,6 +71,10 @@ class WebSocketTransport extends Transport
   _message: (event) =>
     frame = @config.parse event.data
     @_restartKeepAlive()
+
+    if @_isSubscriptionFailed frame
+      return @config.subscriptionFailed frame
+
     unless @_isPong frame
       try
         @_lastMessageSequence = frame.last_sequence
@@ -115,5 +122,7 @@ class WebSocketTransport extends Transport
   _isPong: (o) ->
     o.pong is 'PONG'
 
-module.exports = WebSocketTransport
+  _isSubscriptionFailed: (o) ->
+    o.error is 'Subscription Failed'
 
+module.exports = WebSocketTransport

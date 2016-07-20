@@ -57,7 +57,10 @@ class LongPollTransport extends Transport
       cache:        false
 
   _requestParams: =>
-    @config.params
+    if typeof @config.params == "function"
+      @config.params()
+    else
+      @config.params
 
   stop: =>
     @_stopRequestLoop = true

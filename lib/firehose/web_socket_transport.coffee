@@ -42,7 +42,10 @@ class WebSocketTransport extends Transport
     if @config.ssl then "wss" else "ws"
 
   _requestParams: =>
-    @config.params
+    if typeof @config.params == "function"
+      @config.params()
+    else
+      @config.params
 
   _open: =>
     sendPing @socket

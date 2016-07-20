@@ -55,9 +55,14 @@ class LongPollTransport extends Transport
       success:      @_success
       error:        @_error
       cache:        false
+      statusCode:
+        500:        @_error
 
   _requestParams: =>
-    @config.params
+    if typeof @config.params == "function"
+      @config.params()
+    else
+      @config.params
 
   stop: =>
     @_stopRequestLoop = true

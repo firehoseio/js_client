@@ -100,7 +100,7 @@ class LongPollTransport extends Transport
   # We need this custom handler to have the connection status
   # properly displayed
   _error: (jqXhr, status, error) =>
-    if jqXhr.status == 500
+    if jqXhr.status == 400
       error = JSON.parse jqXhr.responseText
       if error.error == 'Subscription failed'
         @config.subscriptionFailed(error)

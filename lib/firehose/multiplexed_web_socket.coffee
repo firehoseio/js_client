@@ -25,14 +25,19 @@ class MultiplexedWebSocket extends WebSocketTransport
 
   _open: =>
     super()
+
+    subs = []
     for channel, opts of @config.channels
       if @_lastMessageSequence
         opts.last_sequence = @_lastMessageSequence[channel]
 
-      unless opts.last_sequence
-        opts.last_sequence = 0
+      subs.push
+        channel: channel
+        last_message_sequence: opts.last_sequence || 0
+        params: opts.params
 
-      @subscribe channel, opts
+    @_sendMessage
+      multiplex_subscribe: subs
 
   _message: (event) =>
     frame = @config.parse event.data

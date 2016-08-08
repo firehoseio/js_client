@@ -13,14 +13,13 @@ class MultiplexedLongPoll extends LongPollTransport
 
   _request: =>
     return if @_stopRequestLoop
-    data = @_subscriptions()
 
     @_lastRequest = $.ajax
       url:          @config.uri
       firehose:     true
       crossDomain:  true
       method:       "POST"
-      data:         data
+      data:         @_subscriptions()
       dataType:     "json"
       timeout:      @_timeout
       success:      @_success
@@ -39,7 +38,10 @@ class MultiplexedLongPoll extends LongPollTransport
     @_updateLastMessageSequences()
     subs = {}
     for channel, opts of @config.channels
-      subs[channel] = opts.last_sequence || 0
+      subs[channel] =
+        last_message_sequence: opts.last_sequence
+        params: opts.params
+
     JSON.stringify(subs)
 
   _success: (data, status, jqXhr) =>

@@ -4,11 +4,17 @@ class MultiplexedWebSocket extends WebSocketTransport
   constructor: (args) ->
     super args
 
+  _requestParams: =>
+    # overriden because we don't set global params for multiplexed connections
+    # instead, we expect params to be configured per channel
+    {}
+
   subscribe: (channel, opts) =>
     @_sendMessage
       multiplex_subscribe:
         channel: channel
-        message_sequence: opts.last_sequence
+        last_message_sequence: opts.last_sequence
+        params: opts.params
 
   unsubscribe: (channelNames...) =>
     @_sendMessage

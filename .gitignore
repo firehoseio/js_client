@@ -10,3 +10,4 @@ tmp
 *.sublime-workspace
 node_modules
 dist/
+.vscode

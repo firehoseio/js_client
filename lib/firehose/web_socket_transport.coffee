@@ -93,7 +93,7 @@ class WebSocketTransport extends Transport
     if @_succeeded
       @connect @_retryDelay
     else if @config.failed
-      @config.failed @
+      @config.failed event
 
   _cleanUp: =>
     @_clearKeepalive()

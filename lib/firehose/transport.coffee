@@ -28,7 +28,7 @@ class Transport
       # Lets try to connect again with delay
       @config.disconnected()
       @connect(@_retryDelay)
-    else @config.failed @
+    else @config.failed event
 
   # Default connection established handler
   _open: (event) =>

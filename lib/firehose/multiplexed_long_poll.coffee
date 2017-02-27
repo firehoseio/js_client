@@ -49,12 +49,10 @@ class MultiplexedLongPoll extends LongPollTransport
     return if @_stopRequestLoop
     if jqXhr.status is 200
       # Of course, IE's XDomainRequest doesn't support non-200 success codes.
-      try
-        message = JSON.parse jqXhr.responseText
-        @_lastMessageSequence ||= {}
-        @_lastMessageSequence[message.channel] = message.last_sequence
-        @config.message message
-      catch e
+      message = JSON.parse jqXhr.responseText
+      @_lastMessageSequence ||= {}
+      @_lastMessageSequence[message.channel] = message.last_sequence
+      @config.message message
     @connect @_okInterval
 
 module.exports = MultiplexedLongPoll

@@ -32,10 +32,8 @@ class MultiplexedWebSocket extends WebSocketTransport
     frame = @config.parse event.data
     @_restartKeepAlive()
     unless @_isPong frame
-      try
-        @_lastMessageSequence ||= {}
-        @_lastMessageSequence[frame.channel] = frame.last_sequence
-        @config.message frame
-      catch e
+      @_lastMessageSequence ||= {}
+      @_lastMessageSequence[frame.channel] = frame.last_sequence
+      @config.message frame
 
 module.exports = MultiplexedWebSocket

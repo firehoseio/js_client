@@ -35,7 +35,10 @@ class WebSocketTransport extends Transport
       @socket.onerror   = @_error
       @socket.onmessage = @_lookForInitialPong
     catch err
-      console?.log(err)
+      if @config.failed
+        @config.failed err
+      else
+        console?.log(err)
 
   # Protocol schema we should use for talking to firehose server.
   _protocol: =>
@@ -76,10 +79,8 @@ class WebSocketTransport extends Transport
       return @config.subscriptionFailed frame
 
     unless @_isPong frame
-      try
-        @_lastMessageSequence = frame.last_sequence
-        @config.message @config.parse frame.message
-      catch e
+      @_lastMessageSequence = frame.last_sequence
+      @config.message @config.parse frame.message
 
   _close: (event) =>
     if event?.wasClean then @_cleanUp()

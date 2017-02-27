@@ -78,11 +78,9 @@ class LongPollTransport extends Transport
     return if @_stopRequestLoop
     if jqXhr.status is 200
       # Of course, IE's XDomainRequest doesn't support non-200 success codes.
-      try
-        {message, last_sequence} = JSON.parse jqXhr.responseText
-        @_lastMessageSequence    = last_sequence || 0
-        @config.message @config.parse message
-      catch e
+      {message, last_sequence} = JSON.parse jqXhr.responseText
+      @_lastMessageSequence    = last_sequence || 0
+      @config.message @config.parse message
     @connect @_okInterval
 
   _ping: =>

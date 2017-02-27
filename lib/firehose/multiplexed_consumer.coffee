@@ -28,7 +28,7 @@ class MultiplexedConsumer extends Consumer
     @config.channels ||= {}
     @config.uri += Consumer.multiplexChannel
 
-    @_updateSubscriptions()
+    MultiplexedConsumer.normalizeChannels(@config)
 
     for channel, opts of @config.channels
       @_addSubscriptionHandler(channel, opts)
@@ -49,30 +49,19 @@ class MultiplexedConsumer extends Consumer
     if opts.message
       @messageHandlers[channel] = opts.message
 
-  _removeSubscriptionHandler: (channelNames...) =>
-    for chan in channelNames
-      delete @messageHandlers[chan]
-
-  _updateSubscriptions: =>
-    MultiplexedConsumer.normalizeChannels(@config)
-
   subscribe: (channel, opts = {}) =>
     channel = MultiplexedConsumer.normalizeChannel(channel)
     @config.channels[channel] = opts
 
-    @_updateSubscriptions()
     @_addSubscriptionHandler(channel, opts)
-    @transport.subscribe(channel, opts)
+    @transport.subscribe(channel, opts) if @connected()
 
   unsubscribe: (channelNames...) =>
-    return unless @connected()
-
     for channel in channelNames
       channel = MultiplexedConsumer.normalizeChannel(channel)
       delete @config.channels[channel]
+      delete @messageHandlers[channel]
 
-    @_updateSubscriptions()
-    @_removeSubscriptionHandler(channelNames...)
-    @transport.unsubscribe(channelNames...)
+    @transport.unsubscribe(channelNames...) if @connected()
 
 module.exports = MultiplexedConsumer

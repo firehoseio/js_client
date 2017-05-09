@@ -90,7 +90,7 @@ class WebSocketTransport extends Transport
     @_cleanUp()
     if @_needToNotifyOfDisconnect
       @_needToNotifyOfDisconnect = false
-      @config.disconnected()
+      @config.disconnected event
     if @_succeeded
       @connect @_retryDelay
     else if @config.failed

@@ -83,13 +83,6 @@ class Consumer
         @config.connected = origConnected
         origConnected()
 
-  #  origDisconnected = @config.disconnected
-  #  @config.disconnected = =>
-  #    deferred.reject()
-  #    if origDisconnected
-  #      @config.disconnected = origDisconnected
-  #      origDisconnected()
-
     deferred.promise()
 
 Consumer.multiplexChannel = "channels@firehose"

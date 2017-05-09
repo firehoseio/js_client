@@ -26,7 +26,7 @@ class Transport
   _error: (event) =>
     if @_succeeded
       # Lets try to connect again with delay
-      @config.disconnected()
+      @config.disconnected event
       @connect(@_retryDelay)
     else @config.failed event
 
@@ -37,7 +37,7 @@ class Transport
 
   # Default connection closed handler
   _close: (event) =>
-    @config.disconnected()
+    @config.disconnected event
 
   # Useful for reconnecting after any networking hiccups
   getLastMessageSequence: =>

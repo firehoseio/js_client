@@ -108,7 +108,7 @@ class LongPollTransport extends Transport
 
     unless @_needToNotifyOfReconnect or @_stopRequestLoop
       @_needToNotifyOfReconnect = true
-      @config.disconnected()
+      @config.disconnected(jqXhr, status, error)
     unless @_stopRequestLoop
       # Ping the server to make sure this isn't a network connectivity error
       setTimeout @_ping, @_retryDelay + @_lagTime

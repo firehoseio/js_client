@@ -17,21 +17,21 @@ module.exports =
         NODE_ENV: '"webpack"'
       __VERSION__: JSON.stringify(version)
     )
-    new webpack.optimize.CommonsChunkPlugin("vendor", "firehose.vendor.js")
+    new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'firehose.vendor.js' })
     new CleanWebpackPlugin ["dist"], root: process.cwd()
   ]
-  resolveLoader:
-    root: path.join(__dirname, "node_modules")
+  resolve:
+    modules: ["node_modules"]
   module:
-    loaders: [
+    rules: [
       {
         test: /\.coffee$/
-        loader: "coffee-loader"
+        use: "coffee-loader"
       }
       {
         test: /\.json$/
-        loader: "json-loader"
+        use: "json-loader"
       }
     ]
   resolve:
-    extensions: ["", ".webpack.js", ".web.js", ".js", ".coffee"]
+    extensions: [".js", ".coffee"]

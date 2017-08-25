@@ -1,7 +1,8 @@
 path                = require("path")
 webpack             = require("webpack")
 version             = require("./package.json").version
-isProduction = process.argv.indexOf("-p") != -1
+codeName            = require("./package.json").codeName
+isProduction        = process.argv.indexOf("-p") != -1
 
 module.exports =
   entry:
@@ -15,6 +16,7 @@ module.exports =
   plugins: [
     new webpack.DefinePlugin(
       __VERSION__: JSON.stringify(version)
+      __CODE_NAME__: JSON.stringify(codeName)
     )
   ]
   resolve:
@@ -24,10 +26,6 @@ module.exports =
       {
         test: /\.coffee$/
         use: "coffee-loader"
-      }
-      {
-        test: /\.json$/
-        use: "json-loader"
       }
     ]
   resolve:

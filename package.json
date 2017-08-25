@@ -2,16 +2,15 @@
   "name": "firehose-client",
   "version": "1.2.0",
   "codeName": "Jingle All the Way",
-  "main": "lib/index.js",
+  "main": "dist/firehose.js",
   "scripts": {
     "prepublish": "npm run build",
     "postpublish": "git push --follow-tags",
-    "build": "webpack -p",
+    "build": "rm -rf dist && webpack && webpack -p",
     "build:watch": "webpack --watch",
     "test": "JASMINE_CONFIG_PATH=./spec/javascripts/support/jasmine.json jasmine"
   },
   "devDependencies": {
-    "clean-webpack-plugin": "^0.1.9",
     "codo": "git://github.com/coffeedoc/codo.git",
     "coffee-loader": "^0.8.0",
     "coffee-script": "^1.10.0",

@@ -1,24 +1,21 @@
 path                = require("path")
 webpack             = require("webpack")
-CleanWebpackPlugin  = require("clean-webpack-plugin")
 version             = require("./package.json").version
+isProduction = process.argv.indexOf("-p") != -1
 
 module.exports =
   entry:
-    firehose: path.join(__dirname, "helpers", "webpack.coffee")
-    vendor: ["jquery"]
+    firehose: path.join(__dirname, "lib", "index.js")
   output:
     path: path.join(__dirname, "dist")
-    filename: "[name].js"
+    filename: "[name]#{if isProduction then ".min" else ""}.js"
+    library: "Firehose"
+    libraryTarget: "umd"
   devtool: "source-map"
   plugins: [
     new webpack.DefinePlugin(
-      "process.env":
-        NODE_ENV: '"webpack"'
       __VERSION__: JSON.stringify(version)
     )
-    new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'firehose.vendor.js' })
-    new CleanWebpackPlugin ["dist"], root: process.cwd()
   ]
   resolve:
     modules: ["node_modules"]

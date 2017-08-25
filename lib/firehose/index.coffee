@@ -1,5 +1,5 @@
 module.exports =
-  version: require("../../package.json").version
+  version: __VERSION__
   codeName: require("../../package.json").codeName
   Consumer: require "./consumer"
   LongPollTransport: require "./long_poll_transport"

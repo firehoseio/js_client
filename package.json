@@ -3,6 +3,7 @@
   "version": "1.2.0",
   "codeName": "Jingle All the Way",
   "main": "dist/firehose.js",
+  "files": ["dist"],
   "scripts": {
     "prepublish": "npm run build",
     "postpublish": "git push --follow-tags",

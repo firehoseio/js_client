@@ -1,5 +1,3 @@
 global.sinon = require "sinon"
 require "../../../register"
-global.Firehose = require "../../../lib/index"
-
-
+global.Firehose = require "../../../dist/firehose.js"

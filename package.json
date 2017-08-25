@@ -19,7 +19,7 @@
     "coffeelint-prefer-double-quotes": "^0.1.0",
     "coffeelint-prefer-symbol-operator": "^0.1.1",
     "coffeescript": "^1.12.7",
-    "jasmine": "^2.4.1",
+    "jasmine": "2.4.1",
     "jquery": "^2.2.4",
     "jsdom": "^9.2.1",
     "json-loader": "^0.5.4",

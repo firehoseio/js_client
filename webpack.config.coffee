@@ -15,8 +15,8 @@ module.exports =
   devtool: "source-map"
   plugins: [
     new webpack.DefinePlugin(
-      __VERSION__: version
-      __CODE_NAME__: codeName
+      __VERSION__: JSON.stringify(version)
+      __CODE_NAME__: JSON.stringify(codeName)
     )
   ]
   resolve:

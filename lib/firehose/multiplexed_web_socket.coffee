@@ -8,7 +8,7 @@ class MultiplexedWebSocket extends WebSocketTransport
     @_sendMessage
       multiplex_subscribe:
         channel: channel
-        message_sequence: opts.last_sequence
+        last_message_sequence: opts.last_sequence
 
   unsubscribe: (channelNames...) =>
     @_sendMessage

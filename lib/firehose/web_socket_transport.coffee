@@ -61,10 +61,10 @@ class WebSocketTransport extends Transport
         @sendStartingMessageSequence @_lastMessageSequence
       else @config.webSocket.connectionVerified @
 
-  sendStartingMessageSequence: (message_sequence) =>
-    @_lastMessageSequence = message_sequence
+  sendStartingMessageSequence: (last_message_sequence) =>
+    @_lastMessageSequence = last_message_sequence
     @socket.onmessage     = @_message
-    @_sendMessage({message_sequence})
+    @_sendMessage({last_message_sequence})
     @_needToNotifyOfDisconnect = true
     Transport::_open.call @
 

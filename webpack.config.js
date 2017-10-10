@@ -6,7 +6,7 @@ const isProduction = process.argv.indexOf("-p") !== -1
 
 module.exports = {
   entry: {
-    firehose: path.join(__dirname, "lib", "index.js")
+    firehose: path.join(__dirname, "lib", "index")
   },
 
   output: {
@@ -32,14 +32,14 @@ module.exports = {
   module: {
     rules: [
       {
-        test: /\.js$/,
-        exclude: /node_modules/,
-        loader: 'babel-loader'
+        test: /\.ts$/,
+        use: 'ts-loader',
+        exclude: /node_modules/
       }
     ]
   },
 
   resolve: {
-    extensions: [".js", ".coffee"]
+    extensions: [".js", ".ts"]
   }
 };

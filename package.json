@@ -32,5 +32,8 @@
   "repository": {
     "type": "git",
     "url": "git://github.com/firehoseio/js_client.git"
+  },
+  "dependencies": {
+    "xhr": "^2.4.0"
   }
 }

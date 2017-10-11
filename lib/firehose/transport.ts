@@ -1,10 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS102: Remove unnecessary code created because of implicit returns
- * DS206: Consider reworking classes to avoid initClass
- * DS207: Consider shorter variations of null checks
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 export default class Transport {
   public retryDelay = 3000;
   protected config: any;
@@ -14,8 +7,6 @@ export default class Transport {
   constructor(config = {}) {
     this.config = config;
     if (!this.config.params) { this.config.params = {}; }
-
-    this;
   }
 
   static supported() {
@@ -38,23 +29,23 @@ export default class Transport {
     if (this.succeeded) {
       // Lets try to connect again with delay
       this.config.disconnected();
-      return this.connect(this.retryDelay);
-    } else { return this.config.failed(event); }
+      this.connect(this.retryDelay);
+    } else { this.config.failed(event); }
   }
 
   // Default connection established handler
   _open(event: Event) {
     this.succeeded = true;
-    return this.config.connected(this);
+    this.config.connected(this);
   }
 
   // Default connection closed handler
   _close(event: Event) {
-    return this.config.disconnected();
+    this.config.disconnected();
   }
 
   // Useful for reconnecting after any networking hiccups
   getLastMessageSequence() {
-    return this.lastMessageSequence || 0;
+    this.lastMessageSequence || 0;
   }
 }

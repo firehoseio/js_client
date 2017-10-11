@@ -162,9 +162,9 @@ export default class LongPollTransport extends Transport {
     }
     if (!this._stopRequestLoop) {
       // Ping the server to make sure this isn't a network connectivity error
-      setTimeout(this._ping, this.retryDelay + this._lagTime);
+      setTimeout(this._ping.bind(this), this.retryDelay + this._lagTime);
       // Reconnect with delay
-      return setTimeout(this._request, this.retryDelay);
+      setTimeout(this._request.bind(this), this.retryDelay);
     }
   }
 }

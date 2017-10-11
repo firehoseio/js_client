@@ -8,5 +8,10 @@
   },
   "include": [
     "lib/**/*"
+  ],
+  "files": [
+    "global.d.ts",
+    "jquery-param.d.ts",
+    "xhr.d.ts"
   ]
 }

@@ -1,10 +1,3 @@
-/*
- * decaffeinate suggestions:
- * DS001: Remove Babel/TypeScript constructor workaround
- * DS102: Remove unnecessary code created because of implicit returns
- * DS205: Consider reworking code to avoid use of IIFEs
- * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
- */
 import xhr from "xhr"
 import LongPollTransport from "./long_poll_transport";
 
@@ -24,8 +17,8 @@ export default class MultiplexedLongPoll extends LongPollTransport {
     if (this._stopRequestLoop) { return; }
     const data = this._subscriptions();
 
-    return this.lastMessageSequence = new Promise((resolve: Function, reject: Function) => {
-      xhr({
+    return new Promise((resolve: Function, reject: Function) => {
+      this._lastRequest = xhr({
         method: "POST",
         firehose: true,
         body: JSON.stringify(data),

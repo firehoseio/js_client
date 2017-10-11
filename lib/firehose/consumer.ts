@@ -4,20 +4,18 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const WebSocketTransport = require("./web_socket_transport");
-const LongPollTransport = require("./long_poll_transport");
+import WebSocketTransport from "./web_socket_transport";
+import LongPollTransport from "./long_poll_transport";
 
-class Consumer {
-  constructor(config) {
-    // Empty handler for messages.
-    this.connected = this.connected.bind(this);
-    this.websocketTransport = this.websocketTransport.bind(this);
-    this.longpollTransport = this.longpollTransport.bind(this);
-    this.connect = this.connect.bind(this);
-    this.stop = this.stop.bind(this);
-    this._upgradeTransport = this._upgradeTransport.bind(this);
-    this._connectPromise = this._connectPromise.bind(this);
-    if (config == null) { config = {}; }
+export default class Consumer {
+  protected config: any;
+  protected _isConnected: boolean;
+  protected upgradeTimeout: any;
+  protected transport: WebSocketTransport | LongPollTransport;
+
+  static multiplexChannel = "channels@firehose";
+
+  constructor(config = {}) {
     this.config = config;
     if (!this.config.message) { this.config.message = function() {}; }
     // Empty handler for error handling.
@@ -57,16 +55,15 @@ class Consumer {
     return this._isConnected;
   }
 
-  websocketTransport(config) {
+  websocketTransport(config = {}) {
     return new WebSocketTransport(config);
   }
 
-  longpollTransport(config) {
+  longpollTransport(config = {}) {
     return new LongPollTransport(config);
   }
 
-  connect(delay) {
-    if (delay == null) { delay = 0; }
+  connect(delay = 0) {
     const promise = this._connectPromise();
 
     this.config.connectionVerified = this._upgradeTransport;
@@ -91,7 +88,7 @@ class Consumer {
     this.transport.stop();
   }
 
-  _upgradeTransport(ws) {
+  _upgradeTransport(ws: WebSocketTransport) {
     this.transport.stop();
     ws.sendStartingMessageSequence(this.transport.getLastMessageSequence());
     this.transport = ws;
@@ -100,7 +97,7 @@ class Consumer {
   // Return a promise that will succeed/fail depending on whether or not the
   // initial connection succeeds.
   _connectPromise() {
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve: Function, reject: Function) => {
       const origConnected = this.config.connected;
       this.config.connected = () => {
         if (origConnected) {
@@ -121,7 +118,3 @@ class Consumer {
     })
   }
 }
-
-Consumer.multiplexChannel = "channels@firehose";
-
-module.exports = Consumer;

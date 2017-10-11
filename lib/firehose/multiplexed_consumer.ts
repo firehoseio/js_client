@@ -7,12 +7,14 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const Consumer = require("./consumer");
-const MultiplexedWebSocket = require("./multiplexed_web_socket");
-const MultiplexedLongPoll = require("./multiplexed_long_poll");
+import Consumer from "./consumer";
+import MultiplexedWebSocket from "./multiplexed_web_socket";
+import MultiplexedLongPoll from "./multiplexed_long_poll";
 
-class MultiplexedConsumer extends Consumer {
-  static subscriptionQuery(config) {
+export default class MultiplexedConsumer extends Consumer {
+  protected transport: MultiplexedWebSocket | MultiplexedLongPoll;
+
+  static subscriptionQuery(config: any) {
     return {
       subscribe: [
         (() => {
@@ -27,23 +29,21 @@ class MultiplexedConsumer extends Consumer {
     };
   }
 
-  static normalizeChannels(config) {
-    return (() => {
-      const result = [];
-      for (let chan in config.channels) {
-        const opts = config.channels[chan];
-        if (chan[0] !== "/") {
-          delete config.channels[chan];
-          result.push(config.channels[`/${chan}`] = opts);
-        } else {
-          result.push(undefined);
-        }
+  static normalizeChannels(config: any) {
+    const result = [];
+    for (let chan in config.channels) {
+      const opts = config.channels[chan];
+      if (chan[0] !== "/") {
+        delete config.channels[chan];
+        result.push(config.channels[`/${chan}`] = opts);
+      } else {
+        result.push(undefined);
       }
-      return result;
-    })();
+    }
+    return result;
   }
 
-  static normalizeChannel(channel) {
+  static normalizeChannel(channel: string) {
     if (channel[0] !== "/") {
       return `/${channel}`;
     } else {
@@ -51,21 +51,10 @@ class MultiplexedConsumer extends Consumer {
     }
   }
 
-  constructor(config) {
-    {
-      // Hack: trick Babel/TypeScript into allowing this before super.
-      if (false) { super(); }
-      let thisFn = (() => { this; }).toString();
-      let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
-      eval(`${thisName} = this;`);
-    }
-    this.websocketTransport = this.websocketTransport.bind(this);
-    this.longpollTransport = this.longpollTransport.bind(this);
-    this.message = this.message.bind(this);
-    this._addSubscriptionHandler = this._addSubscriptionHandler.bind(this);
-    this.subscribe = this.subscribe.bind(this);
-    this.unsubscribe = this.unsubscribe.bind(this);
-    if (config == null) { config = {}; }
+  protected messageHandlers: {[index: string] : Function};
+
+  constructor(config = {}) {
+    super(config);
     this.config = config;
     this.messageHandlers = {};
     if (!this.config.message) { this.config.message = this.message; }
@@ -82,29 +71,28 @@ class MultiplexedConsumer extends Consumer {
     super(this.config);
   }
 
-  websocketTransport(config) {
+  websocketTransport(config = {}) {
     return new MultiplexedWebSocket(config);
   }
 
-  longpollTransport(config) {
+  longpollTransport(config = {}) {
     return new MultiplexedLongPoll(config);
   }
 
-  message(msg) {
-    let handler;
-    if (handler = this.messageHandlers[msg.channel]) {
-      return handler(this.config.parse(msg.message));
+  message(msg: any) {
+    let handler = this.messageHandlers[msg.channel];
+    if (handler) {
+      handler(this.config.parse(msg.message));
     }
   }
 
-  _addSubscriptionHandler(channel, opts) {
+  _addSubscriptionHandler(channel: string, opts: any) {
     if (opts.message) {
       return this.messageHandlers[channel] = opts.message;
     }
   }
 
-  subscribe(channel, opts) {
-    if (opts == null) { opts = {}; }
+  subscribe(channel: string, opts = {}) {
     channel = MultiplexedConsumer.normalizeChannel(channel);
     this.config.channels[channel] = opts;
 
@@ -112,15 +100,13 @@ class MultiplexedConsumer extends Consumer {
     if (this.connected()) { return this.transport.subscribe(channel, opts); }
   }
 
-  unsubscribe(...channelNames) {
-    for (let channel of Array.from(channelNames)) {
+  unsubscribe(...channelNames: string[]) {
+    for (let channel of channelNames) {
       channel = MultiplexedConsumer.normalizeChannel(channel);
       delete this.config.channels[channel];
       delete this.messageHandlers[channel];
     }
 
-    if (this.connected()) { return this.transport.unsubscribe(...Array.from(channelNames || [])); }
+    if (this.connected()) { return this.transport.unsubscribe(channelNames); }
   }
 }
-
-module.exports = MultiplexedConsumer;

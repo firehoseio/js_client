@@ -10,7 +10,7 @@ describe 'Firehose.Transport', ->
   describe 'constructor', ->
     it 'returns an instance',     -> expect( @instance             ).toEqual jasmine.any @klass
     it 'sets the @config object', -> expect( @instance.config      ).toEqual jasmine.any Object
-    it 'sets a retry delay',      -> expect( @instance._retryDelay ).toEqual jasmine.any Number
+    it 'sets a retry delay',      -> expect( @instance.retryDelay ).toEqual jasmine.any Number
 
   describe '#connect', ->
     describe 'when given a 500 delay', ->

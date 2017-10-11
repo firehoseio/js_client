@@ -6,50 +6,32 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const Transport = require("./transport");
+import Transport from "./transport";
 
 const INITIAL_PING_TIMEOUT   =  2000;
 const KEEPALIVE_PING_TIMEOUT = 20000;
 
-const sendPing = socket => socket.send(JSON.stringify({ping: 'PING'}));
+const sendPing = (socket: WebSocket) => socket.send(JSON.stringify({ping: 'PING'}));
 
 const getWebSocket = () => (typeof window !== 'undefined' && window !== null ? window.WebSocket : undefined) || (typeof global !== 'undefined' && global !== null ? global.WebSocket : undefined);
 
-class WebSocketTransport extends Transport {
+export default class WebSocketTransport extends Transport {
   name() { return 'WebSocket'; }
 
   static ieSupported() { return (document.documentMode || 10) > 9; }
   static supported() { return !!getWebSocket(); } // Check if WebSocket is an object in the window.
+  protected socket: WebSocket;
+  protected _needToNotifyOfDisconnect: boolean;
+  protected keepaliveTimeout: any;
 
-  constructor(args) {
-    {
-      // Hack: trick Babel/TypeScript into allowing this before super.
-      if (false) { super(); }
-      let thisFn = (() => { this; }).toString();
-      let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
-      eval(`${thisName} = this;`);
-    }
-    this._sendMessage = this._sendMessage.bind(this);
-    this._request = this._request.bind(this);
-    this._protocol = this._protocol.bind(this);
-    this._requestParams = this._requestParams.bind(this);
-    this._open = this._open.bind(this);
-    this._lookForInitialPong = this._lookForInitialPong.bind(this);
-    this.sendStartingMessageSequence = this.sendStartingMessageSequence.bind(this);
-    this.stop = this.stop.bind(this);
-    this._message = this._message.bind(this);
-    this._close = this._close.bind(this);
-    this._error = this._error.bind(this);
-    this._cleanUp = this._cleanUp.bind(this);
-    this._restartKeepAlive = this._restartKeepAlive.bind(this);
-    this._clearKeepalive = this._clearKeepalive.bind(this);
+  constructor(args = {}) {
     super(args);
     // Configrations specifically for web sockets
     if (!this.config.webSocket) { this.config.webSocket = {}; }
     this.config.webSocket.connectionVerified = this.config.connectionVerified;
   }
 
-  _sendMessage(message) {
+  _sendMessage(message: any) {
     return (this.socket != null ? this.socket.send(JSON.stringify(message)) : undefined);
   }
 
@@ -59,10 +41,10 @@ class WebSocketTransport extends Transport {
     try {
       const ws = getWebSocket();
       this.socket = new ws(`${this._protocol()}:${this.config.uri}?${$.param(this._requestParams())}`);
-      this.socket.onopen    = this._open;
-      this.socket.onclose   = this._close;
-      this.socket.onerror   = this._error;
-      return this.socket.onmessage = this._lookForInitialPong;
+      this.socket.onopen    = this._open.bind(this);
+      this.socket.onclose   = this._close.bind(this);
+      this.socket.onerror   = this._error.bind(this);
+      this.socket.onmessage = this._lookForInitialPong.bind(this);
     } catch (err) {
       if (this.config.failed) {
         return this.config.failed(err);
@@ -89,18 +71,18 @@ class WebSocketTransport extends Transport {
     return sendPing(this.socket);
   }
 
-  _lookForInitialPong(event) {
+  _lookForInitialPong(event: any) {
     this._restartKeepAlive();
     if (this._isPong((() => { try { return JSON.parse(event.data); } catch (e) { return {}; } })())) {
-      if (this._lastMessageSequence != null) {
+      if (this.lastMessageSequence != null) {
         // don't callback to connectionVerified on subsequent reconnects
-        return this.sendStartingMessageSequence(this._lastMessageSequence);
+        return this.sendStartingMessageSequence(this.lastMessageSequence);
       } else { return this.config.webSocket.connectionVerified(this); }
     }
   }
 
-  sendStartingMessageSequence(message_sequence) {
-    this._lastMessageSequence = message_sequence;
+  sendStartingMessageSequence(message_sequence: any) {
+    this.lastMessageSequence = message_sequence;
     this.socket.onmessage     = this._message;
     this._sendMessage({message_sequence});
     this._needToNotifyOfDisconnect = true;
@@ -111,7 +93,7 @@ class WebSocketTransport extends Transport {
     return this._cleanUp();
   }
 
-  _message(event) {
+  _message(event: any) {
     const frame = this.config.parse(event.data);
     this._restartKeepAlive();
 
@@ -120,24 +102,24 @@ class WebSocketTransport extends Transport {
     }
 
     if (!this._isPong(frame)) {
-      this._lastMessageSequence = frame.last_sequence;
+      this.lastMessageSequence = frame.last_sequence;
       return this.config.message(this.config.parse(frame.message));
     }
   }
 
-  _close(event) {
+  _close(event: any) {
     if ((event != null ? event.wasClean : undefined)) { return this._cleanUp();
     } else { return this._error(event); }
   }
 
-  _error(event) {
+  _error(event: any) {
     this._cleanUp();
     if (this._needToNotifyOfDisconnect) {
       this._needToNotifyOfDisconnect = false;
       this.config.disconnected();
     }
-    if (this._succeeded) {
-      return this.connect(this._retryDelay);
+    if (this.succeeded) {
+      return this.connect(this.retryDelay);
     } else if (this.config.failed) {
       return this.config.failed(event);
     }
@@ -170,17 +152,15 @@ class WebSocketTransport extends Transport {
   _clearKeepalive() {
     if (this.keepaliveTimeout != null) {
       clearTimeout(this.keepaliveTimeout);
-      return this.keepaliveTimeout = null;
+      this.keepaliveTimeout = null;
     }
   }
 
-  _isPong(o) {
+  _isPong(o: any) {
     return o.pong === 'PONG';
   }
 
-  _isSubscriptionFailed(o) {
+  _isSubscriptionFailed(o: any) {
     return o.error === 'Subscription Failed';
   }
 }
-
-module.exports = WebSocketTransport;

@@ -6,13 +6,20 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-const xhr = require("xhr")
-const Transport = require("./transport");
+import xhr from "xhr"
+import Transport from "./transport";
 
-class LongPollTransport extends Transport {
-  static initClass() {
-    this.prototype.messageSequenceHeader = 'Pragma';
-  }
+export default class LongPollTransport extends Transport {
+  static messageSequenceHeader = "Pragma"
+  // We use the lag time to make the client live longer than the server.
+  protected _lagTime = 5000;
+  protected _timeout: number;
+  protected _okInterval: number;
+  protected _stopRequestLoop: boolean;
+  protected _needToNotifyOfReconnect: boolean;
+  protected _lastRequest: any;
+  protected _lastPingRequest: any;
+
   name() { return 'LongPoll'; }
 
   // CORS is kinda supported in IE8+ except that its implementation cannot
@@ -27,21 +34,7 @@ class LongPollTransport extends Transport {
     return LongPollTransport.ieSupported()
   }
 
-  constructor(args) {
-    {
-      // Hack: trick Babel/TypeScript into allowing this before super.
-      if (false) { super(); }
-      let thisFn = (() => { this; }).toString();
-      let thisName = thisFn.slice(thisFn.indexOf('{') + 1, thisFn.indexOf(';')).trim();
-      eval(`${thisName} = this;`);
-    }
-    this._protocol = this._protocol.bind(this);
-    this._request = this._request.bind(this);
-    this._requestParams = this._requestParams.bind(this);
-    this.stop = this.stop.bind(this);
-    this._success = this._success.bind(this);
-    this._ping = this._ping.bind(this);
-    this._error = this._error.bind(this);
+  constructor(args = {}) {
     super(args);
 
     if (this.config.ssl == null) { this.config.ssl = false; }
@@ -51,13 +44,10 @@ class LongPollTransport extends Transport {
     if (!this.config.longPoll.url) { this.config.longPoll.url = `${this._protocol()}:${this.config.uri}`; }
     // How many ms should we wait before timing out the AJAX connection?
     if (!this.config.longPoll.timeout) { this.config.longPoll.timeout = 25000; }
-    // TODO - What is @_lagTime for? Can't we just use the @_timeout value?
-    // We use the lag time to make the client live longer than the server.
-    this._lagTime                  = 5000;
     this._timeout                  = this.config.longPoll.timeout + this._lagTime;
     this._okInterval               = this.config.okInterval || 0;
     this._stopRequestLoop          = false;
-    this._lastMessageSequence      = 0;
+    this.lastMessageSequence      = 0;
   }
 
   // Protocol schema we should use for talking to firehose server.
@@ -71,9 +61,9 @@ class LongPollTransport extends Transport {
     // Ideally we'd use an HTTP header, but android devices don't let us
     // set any HTTP headers for CORS requests.
     const data = this._requestParams();
-    data.last_message_sequence = this._lastMessageSequence;
-    return this._lastMessageSequence = new Promise((resolve, reject) => {
-      xhr({
+    data.last_message_sequence = this.lastMessageSequence;
+    return new Promise((resolve: Function, reject: Function) => {
+      this._lastRequest = xhr({
         firehose: true,
         body: JSON.stringify(data),
         uri: this.config.longPoll.url,
@@ -82,7 +72,7 @@ class LongPollTransport extends Transport {
         headers: {
           "Content-Type": "application/json"
         }
-      }, (err, resp, body) => {
+      }, (err: any, resp: any, body: any) => {
         if (err) {
           this._error(resp, resp.statusCode, err)
           reject(resp)
@@ -115,8 +105,8 @@ class LongPollTransport extends Transport {
     }
   }
 
-  _success(data, status, xhr) {
-    if (this._needToNotifyOfReconnect || !this._succeeded) {
+  _success(data: any, status: number, xhr: any) {
+    if (this._needToNotifyOfReconnect || !this.succeeded) {
       this._needToNotifyOfReconnect = false;
       this._open(data);
     }
@@ -124,15 +114,15 @@ class LongPollTransport extends Transport {
     if (status === 200) {
       // Of course, IE's XDomainRequest doesn't support non-200 success codes.
       const {message, last_sequence} = JSON.parse(xhr.responseText);
-      this._lastMessageSequence    = last_sequence || 0;
+      this.lastMessageSequence    = last_sequence || 0;
       this.config.message(this.config.parse(message));
     }
     return this.connect(this._okInterval);
   }
 
   _ping() {
-    return this._lastPingRequest = new Promise((resolve, reject) => {
-      xhr({
+    return new Promise((resolve: Function, reject: Function) => {
+      this._lastPingRequest = xhr({
         method: "HEAD",
         firehose: true,
         body: JSON.stringify(this._requestParams()),
@@ -141,7 +131,7 @@ class LongPollTransport extends Transport {
         headers: {
           "Content-Type": "application/json"
         }
-      }, (err, resp, body) => {
+      }, (err: any, resp: any, body: any) => {
         if (err) {
           reject(err)
         }
@@ -158,7 +148,7 @@ class LongPollTransport extends Transport {
 
   // We need this custom handler to have the connection status
   // properly displayed
-  _error(xhr, status, error) {
+  _error(xhr: any, status: number, error: any) {
     if (status === 400) {
       error = JSON.parse(xhr.responseText);
       if (error.message === 'Subscription failed') {
@@ -172,12 +162,9 @@ class LongPollTransport extends Transport {
     }
     if (!this._stopRequestLoop) {
       // Ping the server to make sure this isn't a network connectivity error
-      setTimeout(this._ping, this._retryDelay + this._lagTime);
+      setTimeout(this._ping, this.retryDelay + this._lagTime);
       // Reconnect with delay
-      return setTimeout(this._request, this._retryDelay);
+      return setTimeout(this._request, this.retryDelay);
     }
   }
 }
-LongPollTransport.initClass();
-
-module.exports = LongPollTransport;

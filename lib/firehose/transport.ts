@@ -5,34 +5,26 @@
  * DS207: Consider shorter variations of null checks
  * Full docs: https://github.com/decaffeinate/decaffeinate/blob/master/docs/suggestions.md
  */
-class Transport {
-  static initClass() {
-    // Class method to determine whether transport is supported by the current browser. Note that while
-    // the transport may be supported by the browser, its possible that the network connection won't
-    // succeed. That should be accounted for during the initial connecting to the server.
-    this.supported = () => {
-      return false;
-    };
-  }
+export default class Transport {
+  public retryDelay = 3000;
+  protected config: any;
+  protected lastMessageSequence: number | {[index: string] : number};
+  protected succeeded: boolean;
 
-  constructor(config) {
-    this.connect = this.connect.bind(this);
-    this._error = this._error.bind(this);
-    this._open = this._open.bind(this);
-    this._close = this._close.bind(this);
-    this.getLastMessageSequence = this.getLastMessageSequence.bind(this);
-    if (config == null) { config = {}; }
+  constructor(config = {}) {
     this.config = config;
     if (!this.config.params) { this.config.params = {}; }
 
-    this._retryDelay = 3000;
     this;
   }
 
+  static supported() {
+    false
+  }
+
   // Lets rock'n'roll! Connect to the server.
-  connect(delay) {
-    if (delay == null) { delay = 0; }
-    setTimeout(this._request, delay);
+  connect(delay = 0) {
+    setTimeout(this._request.bind(this), delay);
     return this;
   }
 
@@ -42,30 +34,27 @@ class Transport {
   _request() { throw 'not implemented in base Transport'; } // implement this to handle requests
 
   // Default error handler
-  _error(event) {
-    if (this._succeeded) {
+  _error(one: any, two?: any, three?: any) {
+    if (this.succeeded) {
       // Lets try to connect again with delay
       this.config.disconnected();
-      return this.connect(this._retryDelay);
+      return this.connect(this.retryDelay);
     } else { return this.config.failed(event); }
   }
 
   // Default connection established handler
-  _open(event) {
-    this._succeeded = true;
+  _open(event: Event) {
+    this.succeeded = true;
     return this.config.connected(this);
   }
 
   // Default connection closed handler
-  _close(event) {
+  _close(event: Event) {
     return this.config.disconnected();
   }
 
   // Useful for reconnecting after any networking hiccups
   getLastMessageSequence() {
-    return this._lastMessageSequence || 0;
+    return this.lastMessageSequence || 0;
   }
 }
-Transport.initClass();
-
-module.exports = Transport;

@@ -26,14 +26,12 @@
     "ws": "^1.1.0",
     "xmlhttprequest": "^1.8.0"
   },
-  "peerDependencies": {
-    "jquery": "^2.2.4"
-  },
   "repository": {
     "type": "git",
     "url": "git://github.com/firehoseio/js_client.git"
   },
   "dependencies": {
+    "jquery-param": "^0.2.0",
     "xhr": "^2.4.0"
   }
 }

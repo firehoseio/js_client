@@ -71,8 +71,7 @@ export default class Consumer {
       this.upgradeTimeout = setTimeout(() => {
         const ws = this.websocketTransport(this.config);
         return ws.connect(delay);
-      }
-      , 500);
+      } , 500);
     }
     this.transport = this.longpollTransport(this.config);
     this.transport.connect(delay);

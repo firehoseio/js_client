@@ -6,13 +6,14 @@ const KEEPALIVE_PING_TIMEOUT = 20000;
 
 const sendPing = (socket: WebSocket) => socket.send(JSON.stringify({ping: 'PING'}));
 
-const getWebSocket = () => (typeof window !== 'undefined' && window !== null ? window.WebSocket : undefined) || (typeof global !== 'undefined' && global !== null ? global.WebSocket : undefined);
+const getWebSocket = () => (typeof window !== 'undefined' && window !== null ? (<any>window).WebSocket : undefined) || (typeof global !== 'undefined' && global !== null ? (<any>global).WebSocket : undefined)
 
 export default class WebSocketTransport extends Transport {
-  name() { return 'WebSocket'; }
+  name() : string { return 'WebSocket' }
 
-  static ieSupported() { return (document.documentMode || 10) > 9; }
-  static supported() { return !!getWebSocket(); } // Check if WebSocket is an object in the window.
+  static ieSupported() { return (((<any>document).documentMode || 10) > 9) }
+  // Check if WebSocket is an object in the window.
+  static supported() { return !!getWebSocket(); }
   protected socket: WebSocket;
   protected _needToNotifyOfDisconnect: boolean;
   protected keepaliveTimeout: any;

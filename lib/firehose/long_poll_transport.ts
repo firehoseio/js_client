@@ -20,13 +20,13 @@ export default class LongPollTransport extends Transport {
   protected _lastRequest: any;
   protected _lastPingRequest: any;
 
-  name() { return 'LongPoll'; }
+  name() : string { return 'LongPoll' }
 
   // CORS is kinda supported in IE8+ except that its implementation cannot
   // access "simple request" response headers. This means we don't yet have a
   // plan to support IE<10 (when it gets a real XHR2 implementation). Sucks...
   // $.browser.msie and parseInt($.browser.version) >= 8 # DEPRECATED
-  static ieSupported() { return (document.documentMode || 10) >= 8; }
+  static ieSupported() { return ((<any>document).documentMode || 10) >= 8 }
 
   // NOTE: xhr npm package is supported everywhere else except for IE < 8
   // > https://github.com/naugtur/xhr#xhr
@@ -56,13 +56,15 @@ export default class LongPollTransport extends Transport {
   }
 
   _request() {
-    if (this._stopRequestLoop) { return; }
-    // Set the Last Message Sequence in a query string.
-    // Ideally we'd use an HTTP header, but android devices don't let us
-    // set any HTTP headers for CORS requests.
-    const data = this._requestParams();
-    data.last_message_sequence = this.lastMessageSequence;
     return new Promise((resolve: Function, reject: Function) => {
+      if (this._stopRequestLoop) { resolve() }
+
+      // Set the Last Message Sequence in a query string.
+      // Ideally we'd use an HTTP header, but android devices don't let us
+      // set any HTTP headers for CORS requests.
+      const data = this._requestParams();
+      data.last_message_sequence = this.lastMessageSequence;
+
       this._lastRequest = xhr({
         firehose: true,
         body: JSON.stringify(data),

@@ -46,9 +46,6 @@ export default class Consumer {
       this._isConnected = true;
       return origConnected();
     };
-
-    // Make sure we return ourself out of the constructor so we can chain.
-    this;
   }
 
   connected() {

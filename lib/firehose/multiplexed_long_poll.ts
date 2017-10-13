@@ -14,10 +14,11 @@ export default class MultiplexedLongPoll extends LongPollTransport {
   unsubscribe(...channelNames: string[]) {}
 
   _request() {
-    if (this._stopRequestLoop) { return; }
-    const data = this._subscriptions();
-
     return new Promise((resolve: Function, reject: Function) => {
+      if (this._stopRequestLoop) { resolve() }
+
+      const data = this._subscriptions();
+
       this._lastRequest = xhr({
         method: "POST",
         firehose: true,

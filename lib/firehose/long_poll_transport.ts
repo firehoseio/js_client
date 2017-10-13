@@ -55,7 +55,7 @@ export default class LongPollTransport extends Transport {
     if (this.config.ssl) { return "https"; } else { return "http"; }
   }
 
-  _request() {
+  _request(): Promise<any> {
     return new Promise((resolve: Function, reject: Function) => {
       if (this._stopRequestLoop) { resolve() }
 
@@ -122,7 +122,7 @@ export default class LongPollTransport extends Transport {
     return this.connect(this._okInterval);
   }
 
-  _ping() {
+  _ping(): Promise<any> {
     return new Promise((resolve: Function, reject: Function) => {
       this._lastPingRequest = xhr({
         method: "HEAD",

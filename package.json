@@ -31,6 +31,7 @@
     "url": "git://github.com/firehoseio/js_client.git"
   },
   "dependencies": {
+    "@types/es6-promise": "0.0.33",
     "jquery-param": "^0.2.0",
     "xhr": "^2.4.0"
   }

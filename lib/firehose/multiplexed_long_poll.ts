@@ -13,7 +13,7 @@ export default class MultiplexedLongPoll extends LongPollTransport {
   subscribe(channel: string, opts: any) {}
   unsubscribe(...channelNames: string[]) {}
 
-  _request() {
+  _request(): Promise<any> {
     return new Promise((resolve: Function, reject: Function) => {
       if (this._stopRequestLoop) { resolve() }
 

@@ -92,7 +92,7 @@ export default class Consumer {
 
   // Return a promise that will succeed/fail depending on whether or not the
   // initial connection succeeds.
-  _connectPromise() {
+  _connectPromise(): Promise<any> {
     return new Promise((resolve: Function, reject: Function) => {
       const origConnected = this.config.connected;
       this.config.connected = () => {

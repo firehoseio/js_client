@@ -1,11 +1,12 @@
 {
   "compilerOptions": {
-    "outDir": "./dist/",
+    "target": "es2015",
     "sourceMap": true,
-    "noImplicitAny": true,
-    "target": "es5",
-    "allowJs": true
+    "module": "commonjs"
   },
+  "exclude": [
+    "node_modules"
+  ],
   "include": [
     "lib/**/*"
   ],
@@ -13,5 +14,6 @@
     "global.d.ts",
     "jquery-param.d.ts",
     "xhr.d.ts"
-  ]
+  ],
+  "compileOnSave": false
 }

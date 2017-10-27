@@ -1,51 +1,68 @@
-export default class Transport {
-  public retryDelay = 3000;
-  protected config: any;
+import {EventEmitter} from 'events';
+
+const TransportEvent = {
+  Connecting: "connecting",
+  Connected: "connected",
+  Disconnected: "disconnected",
+  Reconnecting: "reconnecting",
+  Reconnected: "reconnected",
+  Failed: "failed",
+  Closed: "closed",
+  Data: "data"
+}
+
+export default class Transport extends EventEmitter {
+  static Event = TransportEvent
+
   protected lastMessageSequence: number | {[index: string] : number};
-  protected succeeded: boolean;
+  protected didSuccessfullyConnect: boolean = false;
 
-  constructor(config = {}) {
-    this.config = config;
-    if (!this.config.params) { this.config.params = {}; }
+  constructor(protected uri: string, protected options: ConnectionOptions) {
+    super()
   }
 
-  static supported() {
-    false
+  emit(event: string | symbol, ...args: any[]) {
+    console.log("TRANSPORT EMIT", event, ...args);
+    debugger
+    return super.emit(event, ...args)
   }
 
-  // Lets rock'n'roll! Connect to the server.
-  connect(delay = 0) {
-    setTimeout(this._request.bind(this), delay);
-    return this;
+  static supported(): boolean {
+    return true
+  }
+
+  connect() {
+    this.emit(Transport.Event.Connecting)
+    this.request()
+  }
+
+  reconnect() {
+    setTimeout(() => {
+      this.emit(Transport.Event.Reconnecting)
+      this.request()
+    }, this.options.retryDelay);
   }
 
   // Hey subclasses:
-  name() {     throw 'not implemented in base Transport'; } // implement this to identify transport type
-  stop() {     throw 'not implemented in base Transport'; } // implement this to stop receiving messages
-  _request() { throw 'not implemented in base Transport'; } // implement this to handle requests
+  public disconnect() { throw 'not implemented in base Transport'; } // implement this to stop receiving messages
+  protected request() { throw 'not implemented in base Transport'; } // implement this to handle requests
 
-  // Default error handler
-  _error(one: any, two?: any, three?: any) {
-    if (this.succeeded) {
-      // Lets try to connect again with delay
-      this.config.disconnected();
-      this.connect(this.retryDelay);
-    } else { this.config.failed(event); }
-  }
-
-  // Default connection established handler
-  _open(event: Event) {
-    this.succeeded = true;
-    this.config.connected(this);
-  }
-
-  // Default connection closed handler
-  _close(event: Event) {
-    this.config.disconnected();
-  }
-
-  // Useful for reconnecting after any networking hiccups
   getLastMessageSequence() {
     this.lastMessageSequence || 0;
+  }
+
+  protected onError(one: any, two?: any, three?: any) {
+    if (this.didSuccessfullyConnect) {
+      // Lets try to connect again with delay
+      this.emit(Transport.Event.Disconnected)
+      this.reconnect();
+    } else {
+      this.emit(Transport.Event.Failed)
+    }
+  }
+
+  protected onOpen(event: Event) {
+    this.didSuccessfullyConnect = true;
+    this.emit(Transport.Event.Connected)
   }
 }

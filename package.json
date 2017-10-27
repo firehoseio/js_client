@@ -15,6 +15,7 @@
   },
   "devDependencies": {
     "@types/node": "^8.0.34",
+    "core-js": "^2.5.1",
     "jasmine": "2.4.1",
     "jquery": "^2.2.4",
     "jsdom": "^9.2.1",

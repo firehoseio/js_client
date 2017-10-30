@@ -11,17 +11,20 @@
     "postpublish": "git push --follow-tags",
     "build": "rm -rf dist && webpack && webpack -p",
     "build:watch": "webpack --watch",
-    "test": "JASMINE_CONFIG_PATH=./spec/javascripts/support/jasmine.json jasmine"
+    "test": "JASMINE_CONFIG_PATH=./spec/support/jasmine.json jasmine"
   },
   "devDependencies": {
+    "@types/jasmine": "^2.6.2",
     "@types/node": "^8.0.34",
     "core-js": "^2.5.1",
     "jasmine": "2.4.1",
     "jquery": "^2.2.4",
     "jsdom": "^9.2.1",
     "json-loader": "^0.5.4",
+    "mock-socket": "^7.0.0",
     "sinon": "^1.17.4",
     "ts-loader": "^2.3.7",
+    "ts-node": "^3.3.0",
     "typescript": "^2.5.3",
     "webpack": "^3.5.5",
     "ws": "^1.1.0",

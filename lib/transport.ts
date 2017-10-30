@@ -24,6 +24,11 @@ export default class Transport extends EventEmitter {
     super()
   }
 
+  // emit(event: string | symbol, ...args: any[]) {
+  //   console.log("TRANSPORT EMIT", event, ...args);
+  //   return super.emit(event, ...args)
+  // }
+
   static supported(): boolean {
     return true
   }

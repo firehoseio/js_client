@@ -96,9 +96,10 @@ export default class WebSocketTransport extends Transport {
   }
 
   private onClose(event: any) {
+    this.emit(Transport.Event.Closed)
     if (event && event.wasClean) {
       this.cleanUp();
-      this.emit(Transport.Event.Closed)
+      this.emit(Transport.Event.Disconnected)
     } else {
       this.onError(event);
     }
@@ -117,6 +118,7 @@ export default class WebSocketTransport extends Transport {
       this.socket.onerror   = null;
       this.socket.onmessage = null;
       this.socket.close();
+      this.socket = null;
     }
   }
 

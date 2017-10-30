@@ -65,4 +65,12 @@ export default class Transport extends EventEmitter {
     this.didSuccessfullyConnect = true;
     this.emit(Transport.Event.Connected)
   }
+
+  protected requestParams() {
+    if (typeof this.options.params === "function") {
+      return this.options.params();
+    } else {
+      return this.options.params;
+    }
+  }
 }

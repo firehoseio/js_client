@@ -1,4 +1,4 @@
-import xhr from "xhr"
+import * as xhr from "xhr"
 import Transport from "./transport";
 
 export default class LongPollTransport extends Transport {
@@ -25,7 +25,7 @@ export default class LongPollTransport extends Transport {
     // Set the Last Message Sequence in a query string.
     // Ideally we'd use an HTTP header, but android devices don't let us
     // set any HTTP headers for CORS requests.
-    const data = this.requestParams();
+    const data = this.options.params ? this.requestParams() : {}
     data.last_message_sequence = this.lastMessageSequence;
 
     this._lastRequest = xhr({
@@ -40,18 +40,10 @@ export default class LongPollTransport extends Transport {
     }, (err: any, resp: any, body: any) => {
       if (err) {
         this.onError(resp, resp.statusCode, err)
+      } else {
+        this.onSuccess(body, resp.statusCode, resp)
       }
-
-      this.onSuccess(body, resp.statusCode, resp)
     })
-  }
-
-  private requestParams() {
-    if (typeof this.options.params === "function") {
-      return this.options.params();
-    } else {
-      return this.options.params;
-    }
   }
 
   disconnect() {

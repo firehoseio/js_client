@@ -64,14 +64,6 @@ export default class WebSocketTransport extends Transport {
     return protocol + main + params
   }
 
-  private requestParams() {
-    if (typeof this.options.params === "function") {
-      return this.options.params();
-    } else {
-      return this.options.params;
-    }
-  }
-
   private onSocketOpen() {
     sendPing(this.socket);
   }

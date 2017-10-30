@@ -15,14 +15,6 @@ enum ConnectionType {
   WebSocket
 }
 
-interface ConnectionOptions {
-  insecure?: boolean // Defaults to secure websockets
-  params?: Object | Function
-  parse?: Function
-  retryDelay?: number
-  longPollTimeout?: number
-}
-
 const DEFAULT_OPTIONS = {
   parse: JSON.parse,
   retryDelay: 3000,
@@ -37,7 +29,7 @@ export default class Connection extends EventEmitter {
   protected state: ConnectionState = ConnectionState.Init;
   protected type: ConnectionType;
 
-  protected upgradeTimeout: any;
+  protected upgradeTimeout: any = null;
   protected transport: WebSocketTransport | LongPollTransport;
 
   static multiplexChannel = "channels@firehose";
@@ -48,7 +40,7 @@ export default class Connection extends EventEmitter {
   }
 
   emit(event: string | symbol, ...args: any[]) {
-    console.log("CONNECTION EMIT", event, ...args);
+    console.log("CONNECTION EMIT", typeof this.transport, event, ...args);
     return super.emit(event, ...args)
   }
 
@@ -64,20 +56,17 @@ export default class Connection extends EventEmitter {
     return new Promise((resolve, reject) => {
 
 
-      // if (WebSocketTransport.supported()) {
-      //   this.upgradeTimeout = setTimeout(() => {
+      if (WebSocketTransport.supported()) {
+        this.upgradeTimeout = setTimeout(() => {
           let ws = new WebSocketTransport(this.uri, this.options)
-          // ws.once(WebSocketTransport.Event.Connected, this.upgradeTransport.bind(this))
-          ws.once(WebSocketTransport.Event.Connected, resolve)
-          ws.once(WebSocketTransport.Event.Failed, reject)
-          ws.once(WebSocketTransport.Event.Connected, () => {
-            ws.sendStartingMessageSequence(0);
-          })
+          ws.once(WebSocketTransport.Event.Connected, () => this.upgradeTransport(ws))
           ws.connect();
-      //   } , 500);
-      // }
-      // this.transport = new LongPollTransport(this.uri, this.options);
-      // this.transport.connect();
+        }, 500);
+      }
+      this.transport = new LongPollTransport(this.uri, this.options);
+      this.transport.once(WebSocketTransport.Event.Connected, resolve)
+      this.transport.once(WebSocketTransport.Event.Failed, reject)
+      this.transport.connect();
     })
   }
 

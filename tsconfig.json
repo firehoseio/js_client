@@ -12,12 +12,12 @@
     "node_modules"
   ],
   "include": [
-    "lib/**/*"
+    "lib/*"
   ],
   "files": [
-    "global.d.ts",
-    "jquery-param.d.ts",
-    "xhr.d.ts"
+    "typedef/global.d.ts",
+    "typedef/types.d.ts",
+    "typedef/npm.d.ts"
   ],
   "compileOnSave": false
 }

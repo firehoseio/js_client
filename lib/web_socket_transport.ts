@@ -33,7 +33,7 @@ export default class WebSocketTransport extends Transport {
 
   sendStartingMessageSequence(message_sequence: any) {
     this.lastMessageSequence = message_sequence;
-    this.socket.onmessage     = this.onMessage.bind(this);
+    this.socket.onmessage = this.onMessage.bind(this);
     this.didSuccessfullyConnect = true;
     this.sendMessage({message_sequence});
   }
@@ -60,7 +60,7 @@ export default class WebSocketTransport extends Transport {
   private requestUri() {
     let protocol = (this.options.insecure ? "ws" : "wss") + "://"
     let main = this.uri.replace(/^\/\//, "")
-    let params = this.options.params ? "?" + this.requestParams() : ""
+    let params = this.options.params ? "?" + param(this.requestParams()) : ""
     return protocol + main + params
   }
 

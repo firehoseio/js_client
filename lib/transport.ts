@@ -17,14 +17,11 @@ export default class Transport extends EventEmitter {
   protected lastMessageSequence: number | {[index: string] : number};
   protected didSuccessfullyConnect: boolean = false;
 
-  constructor(protected uri: string, protected options: ConnectionOptions) {
+  constructor(
+    protected uri: string,
+    protected options: ConnectionOptions = {}
+  ) {
     super()
-  }
-
-  emit(event: string | symbol, ...args: any[]) {
-    console.log("TRANSPORT EMIT", event, ...args);
-    debugger
-    return super.emit(event, ...args)
   }
 
   static supported(): boolean {
@@ -36,19 +33,27 @@ export default class Transport extends EventEmitter {
     this.request()
   }
 
-  reconnect() {
+  disconnect() { throw 'Subclass TODO'; }
+
+  getLastMessageSequence(): number | {[index: string] : number} {
+    return this.lastMessageSequence || 0;
+  }
+
+  protected reconnect() {
     setTimeout(() => {
       this.emit(Transport.Event.Reconnecting)
       this.request()
     }, this.options.retryDelay);
   }
 
-  // Hey subclasses:
-  public disconnect() { throw 'not implemented in base Transport'; } // implement this to stop receiving messages
-  protected request() { throw 'not implemented in base Transport'; } // implement this to handle requests
+  protected request() { throw 'Subclass TODO'; }
 
-  getLastMessageSequence() {
-    this.lastMessageSequence || 0;
+  protected requestParams() {
+    if (typeof this.options.params === "function") {
+      return this.options.params();
+    } else {
+      return this.options.params;
+    }
   }
 
   protected onError(one: any, two?: any, three?: any) {
@@ -64,13 +69,5 @@ export default class Transport extends EventEmitter {
   protected onOpen(event: Event) {
     this.didSuccessfullyConnect = true;
     this.emit(Transport.Event.Connected)
-  }
-
-  protected requestParams() {
-    if (typeof this.options.params === "function") {
-      return this.options.params();
-    } else {
-      return this.options.params;
-    }
   }
 }

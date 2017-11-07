@@ -28,15 +28,16 @@ export default class Connection extends EventEmitter {
   protected options: ConnectionOptions;
   protected state: ConnectionState = ConnectionState.Init;
   protected type: ConnectionType;
-
-  protected upgradeTimeout: any = null;
   protected transport: WebSocketTransport | LongPollTransport;
+  protected upgradeTimeout: any = null;
+  // Used so we can clean this up if we disconnect during upgrade
+  protected wst: WebSocketTransport;
 
   static multiplexChannel = "channels@firehose";
 
   constructor(protected uri: string, options: ConnectionOptions = {}) {
     super()
-    this.options = Object.assign(options, DEFAULT_OPTIONS);
+    this.options = Object.assign({}, DEFAULT_OPTIONS, options);
   }
 
   emit(event: string | symbol, ...args: any[]) {
@@ -55,17 +56,17 @@ export default class Connection extends EventEmitter {
   connect() {
     return new Promise((resolve, reject) => {
 
-
       if (WebSocketTransport.supported()) {
         this.upgradeTimeout = setTimeout(() => {
-          let ws = new WebSocketTransport(this.uri, this.options)
-          ws.once(WebSocketTransport.Event.Connected, () => this.upgradeTransport(ws))
-          ws.connect();
+          this.wst = new WebSocketTransport(this.uri, this.options)
+          this.wst.once(WebSocketTransport.Event.Connected, this.upgradeTransport.bind(this))
+          this.wst.connect();
         }, 500);
       }
+
       this.transport = new LongPollTransport(this.uri, this.options);
-      this.transport.once(WebSocketTransport.Event.Connected, resolve)
-      this.transport.once(WebSocketTransport.Event.Failed, reject)
+      this.transport.once(LongPollTransport.Event.Connected, resolve)
+      this.transport.once(LongPollTransport.Event.Failed, reject)
       this.transport.connect();
     })
   }
@@ -75,12 +76,17 @@ export default class Connection extends EventEmitter {
       clearTimeout(this.upgradeTimeout);
       this.upgradeTimeout = null;
     }
+    if (this.wst != null) {
+      try {
+        this.wst.disconnect()
+      } catch(e) {}
+    }
     this.transport.disconnect();
   }
 
-  private upgradeTransport(ws: WebSocketTransport) {
+  private upgradeTransport() {
     this.transport.disconnect();
-    ws.sendStartingMessageSequence(this.transport.getLastMessageSequence());
-    this.transport = ws;
+    this.wst.sendStartingMessageSequence(this.transport.getLastMessageSequence());
+    this.transport = this.wst;
   }
 }

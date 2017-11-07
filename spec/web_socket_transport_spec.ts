@@ -104,6 +104,7 @@ describe("WebSocketTransport", () => {
     it("sends on the message sequence to the server", (end) => {
       this.server.on('message', data => {
         data = JSON.parse(data)
+        if(data.ping) return
         expect( data.message_sequence ).toBe(10)
         end()
       });
@@ -139,7 +140,7 @@ describe("WebSocketTransport", () => {
       expect(this.transportFailed).not.toHaveBeenCalled()
     })
 
-    fit("server dirty close closed the local version", () => {
+    it("server dirty close closed the local version", () => {
       this.server.close({wasClean: false, code: 666})
       jasmine.clock().tick(10)
 

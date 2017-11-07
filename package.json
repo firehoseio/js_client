@@ -11,7 +11,8 @@
     "postpublish": "git push --follow-tags",
     "build": "rm -rf dist && webpack && webpack -p",
     "build:watch": "webpack --watch",
-    "test": "JASMINE_CONFIG_PATH=./spec/support/jasmine.json jasmine"
+    "test": "JASMINE_CONFIG_PATH=./spec/support/jasmine.json jasmine",
+    "test:debug": "JASMINE_CONFIG_PATH=./spec/support/jasmine.json node --inspect-brk ./node_modules/.bin/jasmine --progress --profile"
   },
   "devDependencies": {
     "@types/jasmine": "^2.6.2",

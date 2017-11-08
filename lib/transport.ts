@@ -72,7 +72,11 @@ export default class Transport extends EventEmitter {
   }
 
   protected onOpen(event: Event) {
+    this.emit(
+      this.didSuccessfullyConnect ?
+      Transport.Event.Reconnected :
+      Transport.Event.Connected
+    )
     this.didSuccessfullyConnect = true;
-    this.emit(Transport.Event.Connected)
   }
 }

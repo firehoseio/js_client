@@ -3,15 +3,17 @@ import Transport from "./transport";
 
 export default class LongPollTransport extends Transport {
   static messageSequenceHeader = "Pragma"
+  static LOOP_DELAY = 500
 
   protected stopRequestLoop: boolean = false;
   protected needToNotifyOfReconnect: boolean = false;
   protected _lastRequest: any;
   protected _lastPingRequest: any;
 
-  constructor(uri, args = {}) {
-    super(uri, args)
+  constructor(uri, options = {}) {
+    super(uri, options)
 
+    this.options.parse = this.options.parse || JSON.parse
     this.lastMessageSequence = 0;
   }
 
@@ -38,10 +40,16 @@ export default class LongPollTransport extends Transport {
         "Content-Type": "application/json"
       }
     }, (err: any, resp: any, body: any) => {
+      if (this.stopRequestLoop) { return; }
       if (err) {
-        this.onError(resp, resp.statusCode, err)
+        // Failed sending data to server
+        this.emit(Transport.Event.Failed)
       } else {
-        this.onSuccess(body, resp.statusCode, resp)
+        if(resp.statusCode === 200) {
+          this.onSuccess(body)
+        } else {
+          this.onError(resp, body)
+        }
       }
     })
   }
@@ -53,40 +61,38 @@ export default class LongPollTransport extends Transport {
       try { this._lastRequest.abort(); } catch (error) { e = error; }
       delete this._lastRequest;
     }
+    this.emit(Transport.Event.Disconnected)
   }
 
-  private onSuccess(data: any, status: number, xhr: any) {
+  private onSuccess(data: any) {
     if (this.needToNotifyOfReconnect || !this.didSuccessfullyConnect) {
       this.needToNotifyOfReconnect = false;
       this.onOpen(data);
     }
-    if (this.stopRequestLoop) { return; }
-    if (status === 200) {
-      // Of course, IE's XDomainRequest doesn't support non-200 success codes.
-      const {message, last_sequence} = JSON.parse(xhr.responseText);
-      this.lastMessageSequence = last_sequence || 0;
-      this.emit(Transport.Event.Data, this.options.parse(message))
-    }
-    return this.connect();
+
+    const {message, last_sequence} = JSON.parse(data);
+    this.lastMessageSequence = last_sequence || 0;
+    this.emit(Transport.Event.Data, this.options.parse(message))
+
+    this.queueRequest()
   }
 
-  // We need this custom handler to have the connection status
-  // properly displayed
-  protected onError(xhr: any, status: number, error: any) {
-    if (status === 400) {
-      error = JSON.parse(xhr.responseText);
+  protected onError(resp: any, body: any) {
+    if (resp.statusCode === 400) {
+      let error = JSON.parse(body);
       if (error.message === 'Subscription failed') {
         this.emit(Transport.Event.Failed)
       }
-    }
-
-    if (!this.needToNotifyOfReconnect && !this.stopRequestLoop) {
+    } else {
       this.needToNotifyOfReconnect = true;
-      this.emit(Transport.Event.Disconnected)
+      super.onError(resp, body)
     }
+  }
 
-    if (!this.stopRequestLoop) {
-      this.reconnect()
-    }
+  private queueRequest() {
+    setTimeout(() => {
+      if (this.stopRequestLoop) { return; }
+      this.request();
+    }, LongPollTransport.LOOP_DELAY)
   }
 }

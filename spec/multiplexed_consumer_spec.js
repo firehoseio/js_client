@@ -1,4 +1,4 @@
-const MultiplexedConsumer = require("../lib/firehose/multiplexed_consumer.js")
+import MultiplexedConsumer from "../lib/multiplexed_consumer.js"
 
 describe('MultiplexedConsumer', function() {
 

@@ -1,4 +1,4 @@
-const LongPollTransport = require("../lib/firehose/long_poll_transport.js")
+import LongPollTransport from "../lib/long_poll_transport.js"
 
 describe('LongPollTransport', function() {
   beforeEach(function() {

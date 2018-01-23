@@ -1,4 +1,4 @@
-const Consumer = require("../lib/firehose/consumer.js")
+import Consumer from "../lib/consumer.js"
 
 describe('Consumer', function() {
   const createFakeTransport = function() {

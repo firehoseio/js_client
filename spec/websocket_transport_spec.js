@@ -1,4 +1,4 @@
-const WebSocketTransport = require("../lib/firehose/web_socket_transport.js")
+import WebSocketTransport from "../lib/web_socket_transport.js"
 
 describe('WebSocketTransport', function() {
   beforeEach(function() {

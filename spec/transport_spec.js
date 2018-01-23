@@ -1,4 +1,4 @@
-const Transport = require("../lib/firehose/transport.js")
+import Transport from "../lib/transport.js"
 
 describe('Transport', function() {
   beforeEach(function() {

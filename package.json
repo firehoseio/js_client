@@ -6,7 +6,8 @@
   "scripts": {
     "build": "webpack -p --config webpack.production.js",
     "build:watch": "webpack --watch --config webpack.production.js",
-    "test": "karma start"
+    "test": "karma start",
+    "test:ci": "karma start --browsers ChromeHeadless"
   },
   "devDependencies": {
     "babel-core": "^6.26.0",

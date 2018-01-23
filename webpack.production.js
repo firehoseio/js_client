@@ -10,5 +10,5 @@ module.exports = webpackMerge(commonConfig, {
   },
   plugins: [
     new CleanWebpackPlugin(["dist"], {root: process.cwd()})
-  ],
+  ]
 })

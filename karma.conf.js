@@ -1,5 +1,4 @@
 const path = require("path")
-const { version } = require("./package.json");
 const webpackConfig = require("./webpack.test.js")
 
 module.exports = function(config) {
@@ -21,7 +20,7 @@ module.exports = function(config) {
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: false,
-    browsers: ['Chrome'],
+    browsers: ['Chrome', 'ChromeHeadless'],
     singleRun: true,
     concurrency: Infinity
   })

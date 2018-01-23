@@ -5,7 +5,9 @@ module.exports = {
   entry: path.join(__dirname, "lib", "index.js"),
   output: {
     path: path.join(__dirname, "dist"),
-    filename: "[name].js"
+    filename: "[name].js",
+    library: "Firehose",
+    libraryTarget: "umd"
   },
   devtool: "source-map",
   module: {

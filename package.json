@@ -14,6 +14,7 @@
     "babel-preset-env": "^1.6.1",
     "clean-webpack-plugin": "^0.1.9",
     "jasmine-core": "^2.9.1",
+    "jquery": "^2.2.4",
     "json-loader": "^0.5.4",
     "karma": "^2.0.0",
     "karma-chrome-launcher": "^2.2.0",
@@ -23,8 +24,8 @@
     "webpack": "^3.10.0",
     "webpack-merge": "^4.1.1"
   },
-  "dependencies": {
-    "jquery": "^2.2.4"
+  "peerDependencies": {
+    "jquery": ">=2.2.4"
   },
   "repository": {
     "type": "git",

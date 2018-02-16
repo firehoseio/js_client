@@ -9,6 +9,10 @@ module.exports = webpackMerge(commonConfig, {
     firehose: path.join(__dirname, "lib", "index.js"),
   },
   plugins: [
-    new CleanWebpackPlugin(["dist"], {root: process.cwd()})
+    new CleanWebpackPlugin(["dist"], {root: process.cwd()}),
+    new webpack.ProvidePlugin({
+      $: 'jquery',
+      jQuery: 'jquery'
+    })
   ]
 })

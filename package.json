@@ -3,6 +3,10 @@
   "version": "1.2.1",
   "codeName": "Jingle All the Way",
   "main": "lib/index.js",
+  "files": [
+    "dist",
+    "lib"
+  ],
   "scripts": {
     "build": "webpack -p --config webpack.production.js",
     "build:watch": "webpack --watch --config webpack.production.js",

@@ -8,6 +8,8 @@
     "lib"
   ],
   "scripts": {
+    "prepublishOnly": "yarn run clean && yarn run build",
+    "clean": "rm -rf dist",
     "build": "webpack -p --config webpack.production.js",
     "build:watch": "webpack --watch --config webpack.production.js",
     "test": "karma start",

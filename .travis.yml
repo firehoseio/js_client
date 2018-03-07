@@ -10,10 +10,12 @@ addons:
 
 language: node_js
 
+cache: yarn
+
 node_js:
   - 6
   - 5
   - 4
 
 script:
-  - npm run test:ci
+  - yarn run test:ci

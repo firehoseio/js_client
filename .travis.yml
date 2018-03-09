@@ -1,4 +1,16 @@
+sudo: required
+dist: trusty
+addons:
+  chrome: stable
+  before_script:
+    - "sudo chown root /opt/google/chrome/chrome-sandbox"
+    - "sudo chmod 4755 /opt/google/chrome/chrome-sandbox"
+addons:
+  chrome: stable
+
 language: node_js
+
+cache: yarn
 
 node_js:
   - 6
@@ -6,4 +18,4 @@ node_js:
   - 4
 
 script:
-  - npm run test
+  - yarn run test:ci

@@ -16,7 +16,7 @@ describe('Transport', function() {
     it('sets a retry delay',      function() { expect( this.instance._retryDelay ).toEqual(jasmine.any(Number)); });
   });
 
-  describe('#connect', () =>
+  describe('#connect', () => {
     describe('when given a 500 delay', function() {
       beforeEach(function() {
         jasmine.clock().install()
@@ -25,7 +25,7 @@ describe('Transport', function() {
       });
 
       afterEach(function() {
-       jasmine.clock().uninstall()
+        jasmine.clock().uninstall()
         this.instance._request.calls.reset()
       })
 
@@ -39,5 +39,20 @@ describe('Transport', function() {
         expect( this.instance._request ).toHaveBeenCalled()
       });
     })
-  );
+
+    describe('when given a -1` delay', function() {
+      beforeEach(function() {
+        spyOn(this.instance, '_request')
+        this.instance.connect(-1);
+      })
+
+      afterEach(function() {
+        this.instance._request.calls.reset()
+      })
+
+      it('calls _request immediately', function() {
+        expect(this.instance._request).toHaveBeenCalled()
+      })
+    })
+  });
 });

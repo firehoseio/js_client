@@ -1,3 +1,13 @@
+## 1.3.0
+
+- Switch to ES6
+
+## 1.2.0
+
+- Don't swallow exceptions
+- Stop trying to unsubscribe while still connecting
+- Pass event to fail handlers
+
 ## 1.1.0
 
 - Add support for new `subscriptionFailed` callback for connections

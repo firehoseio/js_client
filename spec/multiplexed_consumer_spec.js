@@ -3,7 +3,7 @@ import MultiplexedConsumer from "../lib/multiplexed_consumer.js"
 describe('MultiplexedConsumer', function() {
 
   const sendMessage = (instance, channel, data) =>
-    instance.message({
+    instance.config.message({
       channel,
       message: JSON.stringify({ data })})
   ;
@@ -52,9 +52,9 @@ describe('MultiplexedConsumer', function() {
         "/foo": {last_sequence: 0, message: jasmine.any(Function)},
         "/bar": {last_sequence: 10, message: jasmine.any(Function)},
         "/noprefix": {message: jasmine.any(Function)}}));
-  });
+    });
 
-    return it("receives only messages from channels it is currently subscribed to", function() {
+    it("receives only messages from channels it is currently subscribed to", function() {
       let i;
       for (i = 1; i <= 5; i++) {
         sendMessage(this.instance, "/foo", `foo-msg-${i}`);
@@ -72,16 +72,18 @@ describe('MultiplexedConsumer', function() {
         sendMessage(this.instance, "/bar", `bar-msg-${i}`);
       }
 
-      return expect(this.receivedMessages).toEqual([].concat(
+      expect(this.receivedMessages).toEqual([].concat(
         ((() => {
         const result = [];
-        for (i of [1,2,3,4,5]) {           result.push({data: `foo-msg-${i}`});
+        for (i of [1,2,3,4,5]) {
+          result.push({data: `foo-msg-${i}`});
         }
         return result;
       })()),
         (() => {
         const result1 = [];
-        for (i of [6,7,8,9,10,16,17,18,19,20]) {           result1.push({data: `bar-msg-${i}`});
+        for (i of [6,7,8,9,10,16,17,18,19,20]) {
+          result1.push({data: `bar-msg-${i}`});
         }
         return result1;
       })()

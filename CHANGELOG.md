@@ -1,3 +1,8 @@
+## 1.4.0
+
+[Transport]
+- Add backward compatible option for `connect`, allowing clients to connect immediately by passing `-1`.
+
 ## 1.3.1
 
 - Fix multiplexed consumer not processing any messages

@@ -1,7 +1,7 @@
 {
   "name": "firehose-client",
-  "version": "1.3.1",
-  "codeName": "ES Six",
+  "version": "1.4.0",
+  "codeName": "Sync Connections",
   "main": "lib/index.js",
   "files": [
     "dist",

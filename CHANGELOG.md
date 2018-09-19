@@ -1,3 +1,5 @@
+## 1.4.1
+
 [LongPollTransport]
 - Throw a `JSON.parse` into a `try/catch` block when parsing a successful `responseText`
 

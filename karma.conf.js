@@ -6,10 +6,11 @@ module.exports = function(config) {
     basePath: '',
     frameworks: ['jasmine'],
     files: [
+      'spec/setup.js',
       'spec/*_spec.js'
     ],
     preprocessors: {
-      'spec/*_spec.js': ['webpack', 'sourcemap']
+      'spec/*.js': ['webpack', 'sourcemap']
     },
     webpack: webpackConfig,
     webpackServer: {

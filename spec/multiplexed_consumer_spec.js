@@ -13,7 +13,7 @@ describe('MultiplexedConsumer', function() {
     this._isConnected = true;
 
     this.instance = new MultiplexedConsumer({
-      uri: '/',
+      uri: '//example.com/',
       okInterval: 9999, // Stop crazy ajax loops during tests
       channels: {
         "/foo": {
@@ -123,7 +123,35 @@ describe('MultiplexedConsumer', function() {
     })
   );
 
-  return describe("while connecting", function() {
+  describe('long poll connection', function() {
+    beforeEach(function() {
+      jasmine.Ajax.install()
+      jasmine.clock().install()
+    });
+
+    afterEach(function() {
+      jasmine.Ajax.uninstall()
+      jasmine.clock().uninstall()
+    });
+
+    it('connects via http', function () {
+      this.instance.connect()
+
+      jasmine.clock().tick()
+
+      const last = jasmine.Ajax.requests.mostRecent()
+
+      expect(last.url).toBe('http://example.com/channels@firehose')
+      expect(last.method).toBe('POST')
+      expect(JSON.parse(last.params)).toEqual(jasmine.objectContaining({
+        '/foo': 0,
+        '/bar': 10,
+        '/noprefix': 0
+      }))
+    })
+  })
+
+  describe("while connecting", function() {
     beforeEach(function() {
       return this._isConnected = false;
     });

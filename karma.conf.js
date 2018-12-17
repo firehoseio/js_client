@@ -15,13 +15,20 @@ module.exports = function(config) {
     webpackServer: {
       noInfo: true
     },
-    reporters: ['dots'],
+    reporters: ['dots', 'coverage'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: false,
     browsers: ['Chrome', 'ChromeHeadless'],
     singleRun: true,
-    concurrency: Infinity
+    concurrency: Infinity,
+    coverageReporter: {
+      dir: 'tmp/coverage/',
+      reporters: [
+        {type: 'html', subdir: 'html'},
+        {type: 'clover', subdir: '.'}
+      ]
+    },
   })
 }

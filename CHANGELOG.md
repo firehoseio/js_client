@@ -1,3 +1,12 @@
+## 1.4.3
+
+[MultiplexedLongPoll]
+- Fix when running on file:// URIs
+
+## 1.4.2
+
+- Lost version
+
 ## 1.4.1
 
 [LongPollTransport]

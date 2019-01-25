@@ -14,8 +14,8 @@ cache: yarn
 
 node_js:
   - 6
-  - 5
-  - 4
+  - 8
+  - 10
 
 script:
   - yarn run test:ci

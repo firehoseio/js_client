@@ -1,3 +1,8 @@
+## 1.4.5
+
+[LongPollTransport]
+- Call `this.config.error` in the else condition in `LongPollTransport#_error`
+
 ## 1.4.4
 
 [WebSocketTransport]

@@ -1,3 +1,8 @@
+## 1.4.8
+
+[MultiplexedLongPollTransport]
+- Set connected state when multiplex long poll starts instead of after the time out
+
 ## 1.4.7
 
 [LongPollTransport]

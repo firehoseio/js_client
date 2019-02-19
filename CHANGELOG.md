@@ -1,7 +1,10 @@
-## 1.4.6
+## 1.4.7
 
 [LongPollTransport]
 - Set connected state when long poll starts instead of after the time out
+
+## 1.4.6
+
 
 ## 1.4.5
 

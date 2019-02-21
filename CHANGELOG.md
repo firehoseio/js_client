@@ -1,3 +1,8 @@
+## 1.4.9
+
+[MultiplexedLongPollTransport]
+- Fix Multiplexed long poll transport behavior when all channels have been removed
+
 ## 1.4.8
 
 [MultiplexedLongPollTransport]

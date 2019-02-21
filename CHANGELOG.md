@@ -1,3 +1,8 @@
+## 1.4.10
+
+[MultiplexedLongPollTransport]
+- Fix try/catch syntax
+
 ## 1.4.9
 
 [MultiplexedLongPollTransport]

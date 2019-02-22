@@ -1,6 +1,6 @@
 {
   "name": "firehose-client",
-  "version": "1.4.10",
+  "version": "1.4.11",
   "codeName": "Sync Connections",
   "main": "lib/index.js",
   "files": [
